@@ -1,0 +1,28 @@
+{
+	"name": "AdventureWorks_OnPremSQL",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "OnPremAdventureWorks_SQLConnection",
+			"type": "LinkedServiceReference"
+		},
+		"type": "SqlServerTable",
+		"structure": [
+			{
+				"name": "SalesOrderID",
+				"type": "Int32"
+			},
+			{
+				"name": "OrderDate",
+				"type": "DateTime"
+			},
+			{
+				"name": "SubTotal",
+				"type": "Decimal"
+			},
+			{
+				"name": "ModifiedDate",
+				"type": "DateTime"
+			}
+		]
+	}
+}

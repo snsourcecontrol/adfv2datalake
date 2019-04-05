@@ -1,7 +1,25 @@
 {
 	"name": "Dataset_ADLS_AdventureWorks",
 	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LinkedService_ADLS",
+			"type": "LinkedServiceReference"
+		},
 		"type": "AzureDataLakeStoreFile",
+		"structure": [
+			{
+				"name": "SalesOrderID"
+			},
+			{
+				"name": "OrderDate"
+			},
+			{
+				"name": "SubTotal"
+			},
+			{
+				"name": "ModifiedDate"
+			}
+		],
 		"typeProperties": {
 			"format": {
 				"type": "TextFormat",
@@ -11,6 +29,10 @@
 				"treatEmptyAsNull": true,
 				"skipLineCount": 0,
 				"firstRowAsHeader": false
+			},
+			"folderPath": {
+				"value": "/@{formatDateTime(adddays(utcnow(), -1), 'yyyy')}\n/@{formatDateTime(adddays(utcnow(), -1), 'MM')}\n/@{formatDateTime(adddays(utcnow(), -1), 'dd')}",
+				"type": "Expression"
 			}
 		}
 	}
