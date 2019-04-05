@@ -1,0 +1,191 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory Name",
+			"defaultValue": "adfv2datalake"
+		},
+		"LinkedService_ADLS_servicePrincipalKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'servicePrincipalKey' of 'LinkedService_ADLS'"
+		},
+		"OnPremAdventureWorks_SQLConnection_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'OnPremAdventureWorks_SQLConnection'"
+		},
+		"OnPremAdventureWorks_SQLConnection_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'OnPremAdventureWorks_SQLConnection'"
+		},
+		"LinkedService_ADLS_properties_typeProperties_dataLakeStoreUri": {
+			"type": "string",
+			"defaultValue": "https://datalaketut.azuredatalakestore.net/webhdfs/v1"
+		},
+		"LinkedService_ADLS_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "f028609b-99b2-40ff-87e1-532ec3be8e06"
+		},
+		"LinkedService_ADLS_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "e26e9ca2-be30-41a1-99df-62644487b9cb"
+		},
+		"LinkedService_ADLS_properties_typeProperties_subscriptionId": {
+			"type": "string",
+			"defaultValue": "1bde1a91-7d4a-4265-9573-8901e65a82ac"
+		},
+		"LinkedService_ADLS_properties_typeProperties_resourceGroupName": {
+			"type": "string",
+			"defaultValue": "ADF"
+		},
+		"OnPremAdventureWorks_SQLConnection_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "dol\\snellore"
+		},
+		"Dataset_ADLS_AdventureWorks_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "/@{formatDateTime(adddays(utcnow(), -1), 'yyyy')}\n/@{formatDateTime(adddays(utcnow(), -1), 'MM')}\n/@{formatDateTime(adddays(utcnow(), -1), 'dd')}"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/LinkedService_ADLS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDataLakeStore",
+				"typeProperties": {
+					"dataLakeStoreUri": "[parameters('LinkedService_ADLS_properties_typeProperties_dataLakeStoreUri')]",
+					"servicePrincipalId": "[parameters('LinkedService_ADLS_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalKey": {
+						"type": "SecureString",
+						"value": "[parameters('LinkedService_ADLS_servicePrincipalKey')]"
+					},
+					"tenant": "[parameters('LinkedService_ADLS_properties_typeProperties_tenant')]",
+					"subscriptionId": "[parameters('LinkedService_ADLS_properties_typeProperties_subscriptionId')]",
+					"resourceGroupName": "[parameters('LinkedService_ADLS_properties_typeProperties_resourceGroupName')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/OnPremAdventureWorks_SQLConnection')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('OnPremAdventureWorks_SQLConnection_connectionString')]",
+					"userName": "[parameters('OnPremAdventureWorks_SQLConnection_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('OnPremAdventureWorks_SQLConnection_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "LocalIntegrationServicesRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/LocalIntegrationServicesRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LocalIntegrationServicesRuntime')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AdventureWorks_OnPremSQL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OnPremAdventureWorks_SQLConnection",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"structure": [
+					{
+						"name": "SalesOrderID",
+						"type": "Int32"
+					},
+					{
+						"name": "OrderDate",
+						"type": "DateTime"
+					},
+					{
+						"name": "SubTotal",
+						"type": "Decimal"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "DateTime"
+					}
+				],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OnPremAdventureWorks_SQLConnection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dataset_ADLS_AdventureWorks')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LinkedService_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureDataLakeStoreFile",
+				"structure": [
+					{
+						"name": "SalesOrderID"
+					},
+					{
+						"name": "OrderDate"
+					},
+					{
+						"name": "SubTotal"
+					},
+					{
+						"name": "ModifiedDate"
+					}
+				],
+				"typeProperties": {
+					"format": {
+						"type": "TextFormat",
+						"columnDelimiter": ",",
+						"rowDelimiter": "",
+						"nullValue": "\\N",
+						"treatEmptyAsNull": true,
+						"skipLineCount": 0,
+						"firstRowAsHeader": false
+					},
+					"folderPath": {
+						"value": "[parameters('Dataset_ADLS_AdventureWorks_properties_typeProperties_folderPath')]",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LinkedService_ADLS')]"
+			]
+		}
+	]
+}

@@ -1,0 +1,112 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory Name",
+			"defaultValue": "adfv2datalake"
+		},
+		"LinkedService_ADLS_servicePrincipalKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'servicePrincipalKey' of 'LinkedService_ADLS'"
+		},
+		"OnPremAdventureWorks_SQLConnection_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'OnPremAdventureWorks_SQLConnection'"
+		},
+		"OnPremAdventureWorks_SQLConnection_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'OnPremAdventureWorks_SQLConnection'"
+		},
+		"LinkedService_ADLS_properties_typeProperties_dataLakeStoreUri": {
+			"type": "string",
+			"defaultValue": "https://datalaketut.azuredatalakestore.net/webhdfs/v1"
+		},
+		"LinkedService_ADLS_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "f028609b-99b2-40ff-87e1-532ec3be8e06"
+		},
+		"LinkedService_ADLS_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "e26e9ca2-be30-41a1-99df-62644487b9cb"
+		},
+		"LinkedService_ADLS_properties_typeProperties_subscriptionId": {
+			"type": "string",
+			"defaultValue": "1bde1a91-7d4a-4265-9573-8901e65a82ac"
+		},
+		"LinkedService_ADLS_properties_typeProperties_resourceGroupName": {
+			"type": "string",
+			"defaultValue": "ADF"
+		},
+		"OnPremAdventureWorks_SQLConnection_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "dol\\snellore"
+		},
+		"Dataset_ADLS_AdventureWorks_properties_typeProperties_folderPath": {
+			"type": "string",
+			"defaultValue": "/@{formatDateTime(adddays(utcnow(), -1), 'yyyy')}\n/@{formatDateTime(adddays(utcnow(), -1), 'MM')}\n/@{formatDateTime(adddays(utcnow(), -1), 'dd')}"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas Token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"LinkedService_ADLS_servicePrincipalKey": {
+						"value": "[parameters('LinkedService_ADLS_servicePrincipalKey')]"
+					},
+					"OnPremAdventureWorks_SQLConnection_connectionString": {
+						"value": "[parameters('OnPremAdventureWorks_SQLConnection_connectionString')]"
+					},
+					"OnPremAdventureWorks_SQLConnection_password": {
+						"value": "[parameters('OnPremAdventureWorks_SQLConnection_password')]"
+					},
+					"LinkedService_ADLS_properties_typeProperties_dataLakeStoreUri": {
+						"value": "[parameters('LinkedService_ADLS_properties_typeProperties_dataLakeStoreUri')]"
+					},
+					"LinkedService_ADLS_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('LinkedService_ADLS_properties_typeProperties_servicePrincipalId')]"
+					},
+					"LinkedService_ADLS_properties_typeProperties_tenant": {
+						"value": "[parameters('LinkedService_ADLS_properties_typeProperties_tenant')]"
+					},
+					"LinkedService_ADLS_properties_typeProperties_subscriptionId": {
+						"value": "[parameters('LinkedService_ADLS_properties_typeProperties_subscriptionId')]"
+					},
+					"LinkedService_ADLS_properties_typeProperties_resourceGroupName": {
+						"value": "[parameters('LinkedService_ADLS_properties_typeProperties_resourceGroupName')]"
+					},
+					"OnPremAdventureWorks_SQLConnection_properties_typeProperties_userName": {
+						"value": "[parameters('OnPremAdventureWorks_SQLConnection_properties_typeProperties_userName')]"
+					},
+					"Dataset_ADLS_AdventureWorks_properties_typeProperties_folderPath": {
+						"value": "[parameters('Dataset_ADLS_AdventureWorks_properties_typeProperties_folderPath')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

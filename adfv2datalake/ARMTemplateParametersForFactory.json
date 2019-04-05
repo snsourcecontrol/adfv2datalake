@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adfv2datalake"
+		},
+		"LinkedService_ADLS_servicePrincipalKey": {
+			"value": ""
+		},
+		"OnPremAdventureWorks_SQLConnection_connectionString": {
+			"value": ""
+		},
+		"OnPremAdventureWorks_SQLConnection_password": {
+			"value": ""
+		},
+		"LinkedService_ADLS_properties_typeProperties_dataLakeStoreUri": {
+			"value": "https://datalaketut.azuredatalakestore.net/webhdfs/v1"
+		},
+		"LinkedService_ADLS_properties_typeProperties_servicePrincipalId": {
+			"value": "f028609b-99b2-40ff-87e1-532ec3be8e06"
+		},
+		"LinkedService_ADLS_properties_typeProperties_tenant": {
+			"value": "e26e9ca2-be30-41a1-99df-62644487b9cb"
+		},
+		"LinkedService_ADLS_properties_typeProperties_subscriptionId": {
+			"value": "1bde1a91-7d4a-4265-9573-8901e65a82ac"
+		},
+		"LinkedService_ADLS_properties_typeProperties_resourceGroupName": {
+			"value": "ADF"
+		},
+		"OnPremAdventureWorks_SQLConnection_properties_typeProperties_userName": {
+			"value": "dol\\snellore"
+		},
+		"Dataset_ADLS_AdventureWorks_properties_typeProperties_folderPath": {
+			"value": "/@{formatDateTime(adddays(utcnow(), -1), 'yyyy')}\n/@{formatDateTime(adddays(utcnow(), -1), 'MM')}\n/@{formatDateTime(adddays(utcnow(), -1), 'dd')}"
+		}
+	}
+}
