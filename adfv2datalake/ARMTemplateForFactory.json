@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'OnPremAdventureWorks_SQLConnection'"
 		},
+		"Dataset_ADLS_AdventureWorks_properties_typeProperties_fileName": {
+			"type": "string",
+			"defaultValue": "sales"
+		},
 		"Dataset_ADLS_AdventureWorks_properties_typeProperties_folderPath": {
 			"type": "string",
 			"defaultValue": "/@{formatDateTime(adddays(utcnow(), -1), 'yyyy')}\n/@{formatDateTime(adddays(utcnow(), -1), 'MM')}\n/@{formatDateTime(adddays(utcnow(), -1), 'dd')}"
@@ -176,6 +180,7 @@
 						"skipLineCount": 0,
 						"firstRowAsHeader": false
 					},
+					"fileName": "[parameters('Dataset_ADLS_AdventureWorks_properties_typeProperties_fileName')]",
 					"folderPath": {
 						"value": "[parameters('Dataset_ADLS_AdventureWorks_properties_typeProperties_folderPath')]",
 						"type": "Expression"
