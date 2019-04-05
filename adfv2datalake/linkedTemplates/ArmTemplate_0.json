@@ -39,13 +39,13 @@
 			"type": "string",
 			"defaultValue": "ADF"
 		},
-		"OnPremAdventureWorks_SQLConnection_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "dol\\snellore"
-		},
 		"Dataset_ADLS_AdventureWorks_properties_typeProperties_folderPath": {
 			"type": "string",
 			"defaultValue": "/@{formatDateTime(adddays(utcnow(), -1), 'yyyy')}\n/@{formatDateTime(adddays(utcnow(), -1), 'MM')}\n/@{formatDateTime(adddays(utcnow(), -1), 'dd')}"
+		},
+		"OnPremAdventureWorks_SQLConnection_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "dol\\snellore"
 		}
 	},
 	"variables": {
@@ -82,30 +82,6 @@
 				"typeProperties": {}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/OnPremAdventureWorks_SQLConnection')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "SqlServer",
-				"typeProperties": {
-					"connectionString": "[parameters('OnPremAdventureWorks_SQLConnection_connectionString')]",
-					"userName": "[parameters('OnPremAdventureWorks_SQLConnection_properties_typeProperties_userName')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('OnPremAdventureWorks_SQLConnection_password')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "LocalIntegrationServicesRuntime",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/LocalIntegrationServicesRuntime')]"
-			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Dataset_ADLS_AdventureWorks')]",
@@ -153,6 +129,30 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/OnPremAdventureWorks_SQLConnection')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('OnPremAdventureWorks_SQLConnection_connectionString')]",
+					"userName": "[parameters('OnPremAdventureWorks_SQLConnection_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('OnPremAdventureWorks_SQLConnection_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "LocalIntegrationServicesRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/LocalIntegrationServicesRuntime')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AdventureWorks_OnPremSQL')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -185,6 +185,60 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/OnPremAdventureWorks_SQLConnection')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CopyPipeline_Oneprem_ADLS')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy SQLDB_to_ADLS",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlSource",
+								"sqlReaderQuery": {
+									"value": "SELECT SalesOrderID, OrderDate, SubTotal, ModifiedDate FROM Sales.SalesOrderHeader\nWHERE Convert(date, ModifiedDate) = '@{formatDateTime(adddays(utcnow(), -1), 'yyyy-MM-dd')}'",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "AzureDataLakeStoreSink"
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "AdventureWorks_OnPremSQL",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Dataset_ADLS_AdventureWorks",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AdventureWorks_OnPremSQL')]",
+				"[concat(variables('factoryId'), '/datasets/Dataset_ADLS_AdventureWorks')]"
 			]
 		}
 	]

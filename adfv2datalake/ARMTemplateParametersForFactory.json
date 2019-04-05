@@ -14,6 +14,9 @@
 		"OnPremAdventureWorks_SQLConnection_password": {
 			"value": ""
 		},
+		"Dataset_ADLS_AdventureWorks_properties_typeProperties_folderPath": {
+			"value": "/@{formatDateTime(adddays(utcnow(), -1), 'yyyy')}\n/@{formatDateTime(adddays(utcnow(), -1), 'MM')}\n/@{formatDateTime(adddays(utcnow(), -1), 'dd')}"
+		},
 		"LinkedService_ADLS_properties_typeProperties_dataLakeStoreUri": {
 			"value": "https://datalaketut.azuredatalakestore.net/webhdfs/v1"
 		},
@@ -31,9 +34,6 @@
 		},
 		"OnPremAdventureWorks_SQLConnection_properties_typeProperties_userName": {
 			"value": "dol\\snellore"
-		},
-		"Dataset_ADLS_AdventureWorks_properties_typeProperties_folderPath": {
-			"value": "/@{formatDateTime(adddays(utcnow(), -1), 'yyyy')}\n/@{formatDateTime(adddays(utcnow(), -1), 'MM')}\n/@{formatDateTime(adddays(utcnow(), -1), 'dd')}"
 		}
 	}
 }
