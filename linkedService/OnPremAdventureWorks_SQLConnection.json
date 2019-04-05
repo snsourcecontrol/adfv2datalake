@@ -1,0 +1,16 @@
+{
+	"name": "OnPremAdventureWorks_SQLConnection",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=True;data source=DOLSPD126169;initial catalog=AdventureWorks2017",
+			"userName": "dol\\snellore",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJjYTRiMmM2Zi01MDUyLTQ2ODItYjRmOC0xYmQ0MmI0NzAxOGEiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "LocalIntegrationServicesRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
