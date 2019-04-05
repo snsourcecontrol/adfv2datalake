@@ -30,6 +30,7 @@
 				"skipLineCount": 0,
 				"firstRowAsHeader": false
 			},
+			"fileName": "sales",
 			"folderPath": {
 				"value": "/@{formatDateTime(adddays(utcnow(), -1), 'yyyy')}\n/@{formatDateTime(adddays(utcnow(), -1), 'MM')}\n/@{formatDateTime(adddays(utcnow(), -1), 'dd')}",
 				"type": "Expression"
