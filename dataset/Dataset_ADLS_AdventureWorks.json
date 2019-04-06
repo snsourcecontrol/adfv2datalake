@@ -32,7 +32,7 @@
 			},
 			"fileName": "sales",
 			"folderPath": {
-				"value": "/@{formatDateTime(adddays(utcnow(), -1), 'yyyy')}\n/@{formatDateTime(adddays(utcnow(), -1), 'MM')}\n/@{formatDateTime(adddays(utcnow(), -1), 'dd')}",
+				"value": "/@{formatDateTime(adddays(utcnow(), -1), 'yyyy')}/@{formatDateTime(adddays(utcnow(), -1), 'MM')}/@{formatDateTime(adddays(utcnow(), -1), 'dd')}",
 				"type": "Expression"
 			}
 		}
