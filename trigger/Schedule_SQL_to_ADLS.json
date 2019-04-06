@@ -1,7 +1,7 @@
 {
 	"name": "Schedule_SQL_to_ADLS",
 	"properties": {
-		"runtimeState": "Started",
+		"runtimeState": "Stopped",
 		"type": "ScheduleTrigger",
 		"typeProperties": {
 			"recurrence": {
