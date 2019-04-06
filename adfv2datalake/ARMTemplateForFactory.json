@@ -19,13 +19,17 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'OnPremAdventureWorks_SQLConnection'"
 		},
+		"databricksLinkedService_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'databricksLinkedService'"
+		},
 		"Dataset_ADLS_AdventureWorks_properties_typeProperties_fileName": {
 			"type": "string",
 			"defaultValue": "sales"
 		},
 		"Dataset_ADLS_AdventureWorks_properties_typeProperties_folderPath": {
 			"type": "string",
-			"defaultValue": "/@{formatDateTime(adddays(utcnow(), -1), 'yyyy')}\n/@{formatDateTime(adddays(utcnow(), -1), 'MM')}\n/@{formatDateTime(adddays(utcnow(), -1), 'dd')}"
+			"defaultValue": "/@{formatDateTime(adddays(utcnow(), -1), 'yyyy')}/@{formatDateTime(adddays(utcnow(), -1), 'MM')}/@{formatDateTime(adddays(utcnow(), -1), 'dd')}"
 		},
 		"LinkedService_ADLS_properties_typeProperties_dataLakeStoreUri": {
 			"type": "string",
@@ -101,13 +105,41 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "Databricks_TransformNotebooks",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "Copy SQLDB_to_ADLS",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/inallamalli@dol.wa.gov/Demo"
+						},
+						"linkedServiceName": {
+							"referenceName": "databricksLinkedService",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"annotations": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/AdventureWorks_OnPremSQL')]",
-				"[concat(variables('factoryId'), '/datasets/Dataset_ADLS_AdventureWorks')]"
+				"[concat(variables('factoryId'), '/datasets/Dataset_ADLS_AdventureWorks')]",
+				"[concat(variables('factoryId'), '/linkedServices/databricksLinkedService')]"
 			]
 		},
 		{
@@ -237,12 +269,22 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/LocalIntegrationServicesRuntime')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"name": "[concat(parameters('factoryName'), '/databricksLinkedService')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"type": "SelfHosted",
-				"typeProperties": {}
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://eastus.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('databricksLinkedService_accessToken')]"
+					},
+					"newClusterNodeType": "Standard_DS3_v2",
+					"newClusterNumOfWorker": "2",
+					"newClusterVersion": "4.3.x-scala2.11"
+				}
 			},
 			"dependsOn": []
 		},
@@ -271,6 +313,16 @@
 						}
 					}
 				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LocalIntegrationServicesRuntime')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
 			},
 			"dependsOn": []
 		}

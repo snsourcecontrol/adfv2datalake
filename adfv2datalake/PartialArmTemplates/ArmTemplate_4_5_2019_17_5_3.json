@@ -1,0 +1,132 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory Name",
+			"defaultValue": "adfv2datalake"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/CopyPipeline_Oneprem_ADLS')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy SQLDB_to_ADLS",
+						"type": "Copy",
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"typeProperties": {
+							"source": {
+								"type": "SqlSource",
+								"sqlReaderQuery": {
+									"value": "SELECT SalesOrderID, OrderDate, SubTotal, ModifiedDate FROM Sales.SalesOrderHeader\nWHERE Convert(date, ModifiedDate) = '@{formatDateTime(adddays(utcnow(), -1), 'yyyy-MM-dd')}'",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "AzureDataLakeStoreSink"
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "AdventureWorks_OnPremSQL",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Dataset_ADLS_AdventureWorks",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "Databricks_TransformNotebooks",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "Copy SQLDB_to_ADLS",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"typeProperties": {
+							"notebookPath": "/Users/inallamalli@dol.wa.gov/Demo"
+						},
+						"linkedServiceName": {
+							"referenceName": "databricksLinkedService",
+							"type": "LinkedServiceReference"
+						}
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Dataset_ADLS_AdventureWorks')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dataset_ADLS_AdventureWorks')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LinkedService_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"type": "AzureDataLakeStoreFile",
+				"structure": [
+					{
+						"name": "SalesOrderID"
+					},
+					{
+						"name": "OrderDate"
+					},
+					{
+						"name": "SubTotal"
+					},
+					{
+						"name": "ModifiedDate"
+					}
+				],
+				"typeProperties": {
+					"format": {
+						"type": "TextFormat",
+						"columnDelimiter": ",",
+						"rowDelimiter": "",
+						"nullValue": "\\N",
+						"treatEmptyAsNull": true,
+						"skipLineCount": 0,
+						"firstRowAsHeader": false
+					},
+					"fileName": "sales",
+					"folderPath": {
+						"value": "/@{formatDateTime(adddays(utcnow(), -1), 'yyyy')}/@{formatDateTime(adddays(utcnow(), -1), 'MM')}/@{formatDateTime(adddays(utcnow(), -1), 'dd')}",
+						"type": "Expression"
+					}
+				}
+			}
+		}
+	]
+}

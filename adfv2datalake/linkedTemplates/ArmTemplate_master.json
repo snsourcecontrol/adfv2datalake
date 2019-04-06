@@ -19,13 +19,17 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'OnPremAdventureWorks_SQLConnection'"
 		},
+		"databricksLinkedService_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'databricksLinkedService'"
+		},
 		"Dataset_ADLS_AdventureWorks_properties_typeProperties_fileName": {
 			"type": "string",
 			"defaultValue": "sales"
 		},
 		"Dataset_ADLS_AdventureWorks_properties_typeProperties_folderPath": {
 			"type": "string",
-			"defaultValue": "/@{formatDateTime(adddays(utcnow(), -1), 'yyyy')}\n/@{formatDateTime(adddays(utcnow(), -1), 'MM')}\n/@{formatDateTime(adddays(utcnow(), -1), 'dd')}"
+			"defaultValue": "/@{formatDateTime(adddays(utcnow(), -1), 'yyyy')}/@{formatDateTime(adddays(utcnow(), -1), 'MM')}/@{formatDateTime(adddays(utcnow(), -1), 'dd')}"
 		},
 		"LinkedService_ADLS_properties_typeProperties_dataLakeStoreUri": {
 			"type": "string",
@@ -80,6 +84,9 @@
 					},
 					"LinkedService_ADLS_servicePrincipalKey": {
 						"value": "[parameters('LinkedService_ADLS_servicePrincipalKey')]"
+					},
+					"databricksLinkedService_accessToken": {
+						"value": "[parameters('databricksLinkedService_accessToken')]"
 					},
 					"OnPremAdventureWorks_SQLConnection_connectionString": {
 						"value": "[parameters('OnPremAdventureWorks_SQLConnection_connectionString')]"
